@@ -14,7 +14,7 @@ export default {
   },
   methods: {
     g() {
-      axios.post("/items/77").then(responce => {
+      axios.post("/qa/77").then(responce => {
         console.log(responce)
       })
     }

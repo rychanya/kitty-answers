@@ -5,5 +5,5 @@
  */
  module.exports = {
     // options...
-    publicPath: "web"
+    publicPath: "static"
   }
