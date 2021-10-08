@@ -9,6 +9,8 @@ python = "^3.9"
 fastapi = "^0.68.1"
 uvicorn = {extras = ["standard"], version = "^0.15.0"}
 aiofiles = "^0.7.0"
+celery = "^5.1.2"
+redis = "^3.5.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  kittyanswers:
+    env_file:
+      - .env
+    image: kittyanswers
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - ${PORT}:${PORT}
+    command: uvicorn answers.main:app --host 0.0.0.0 --port ${PORT}
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: celery --app=answers.tasks.app worker
+    env_file:
+      - .env
+    depends_on:
+      - kittyanswers
+      - redis
+
+  redis:
+    image: redis:6-alpine

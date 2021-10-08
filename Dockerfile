@@ -18,4 +18,4 @@ COPY --from=requirements-stage /tmp/requirements.txt /answers/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /answers/requirements.txt
 COPY ./answers /answers
 COPY --from=build-stage /kitty/dist /kitty/dist
-CMD uvicorn answers.main:app --host 0.0.0.0 --port ${PORT}
+# CMD uvicorn answers.main:app --host 0.0.0.0 --port ${PORT}
