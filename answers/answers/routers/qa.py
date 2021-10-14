@@ -1,10 +1,10 @@
 from fastapi import APIRouter
-from typing import Optional
 from answers.tasks import add
+from answers.models.qa import SearchResult
+from answers.db.qa import search
 
 router = APIRouter()
 
-@router.post("/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    # return {"item_id": item_id, "q": q}
-    return add.delay(str(item_id), q).id
+@router.get("/search/{q}", response_model=list[SearchResult])
+def search_qa(q: str):
+    return search(q)

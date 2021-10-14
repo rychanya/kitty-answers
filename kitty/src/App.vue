@@ -1,30 +1,68 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <section class="hero is-primary is-fullheight">
+    <!-- Hero head: will stick at the top -->
+    <div class="hero-head">
+      <header class="navbar">
+        <div class="container">
+          <div class="navbar-brand">
+            <router-link to="/" class="navbar-item" active-class="">
+              <img src="@/assets/logo.png" alt="Logo" />
+              Котята
+            </router-link>
+            <span
+              class="navbar-burger"
+              data-target="navbarMenuHeroC"
+              :class="{ 'is-active': isMenuActive }"
+              @click="togleMenu()"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </div>
+          <div
+            id="navbarMenuHeroC"
+            class="navbar-menu"
+            :class="{ 'is-active': isMenuActive }"
+          >
+            <div class="navbar-end">
+              <router-link to="/" class="navbar-item" active-class="is-active"
+                >Home</router-link
+              >
+              <router-link
+                to="/search"
+                class="navbar-item"
+                active-class="is-active"
+                >Search</router-link
+              >
+            </div>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <!-- Hero content: will be in the middle -->
+    <div class="hero-body">
+      <router-view />
+    </div>
+
+    <!-- Hero footer: will stick at the bottom -->
+    <div class="hero-foot"></div>
+  </section>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import { defineComponent, ref } from "vue";
 
-#nav {
-  padding: 30px;
-}
+export default defineComponent({
+  setup() {
+    let isMenuActive = ref(false);
+    const togleMenu = () => {
+      isMenuActive.value = !isMenuActive.value;
+    };
+    return { isMenuActive, togleMenu };
+  },
+});
+</script>
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+<style></style>
