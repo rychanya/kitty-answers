@@ -22,6 +22,7 @@ class SearchResultEl(BaseModel):
     class Config:
         use_enum_values = True
         allow_population_by_field_name = True
+        json_encoders = {ObjectId: str}
 
     id: OIDStr = Field(None, alias="_id")
     by: Optional[OIDStr]

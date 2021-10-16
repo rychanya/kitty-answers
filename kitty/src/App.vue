@@ -47,20 +47,26 @@
     </div>
 
     <!-- Hero footer: will stick at the bottom -->
-    <div class="hero-foot"></div>
+    <div class="hero-foot">
+      <button @click="ddd">hhhhh</button>
+    </div>
   </section>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, inject } from "vue";
 
 export default defineComponent({
   setup() {
+    function ddd() {
+      let k = inject("auth0");
+      console.log(k);
+    }
     let isMenuActive = ref(false);
     const togleMenu = () => {
       isMenuActive.value = !isMenuActive.value;
     };
-    return { isMenuActive, togleMenu };
+    return { isMenuActive, togleMenu, ddd };
   },
 });
 </script>

@@ -1,4 +1,5 @@
 from answers.db import client
+from bson import ObjectId
 
 COL_NAME = "QA"
 
@@ -20,3 +21,6 @@ def search(s: str):
         },
     ]
     return list(collection.aggregate(pipeline=pipeline))
+
+def get(_id: ObjectId):
+    return collection.find_one({"_id": _id})
