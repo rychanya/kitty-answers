@@ -1,9 +1,11 @@
 <template>
-  <QA v-if="qa" :full="true" :qa="qa"></QA>
+  <div class="container">
+    <QA v-if="qa" :full="true" :qa="qa"></QA>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, ref } from "vue";
+import { defineComponent, ref } from "vue";
 import { useRoute } from "vue-router";
 import QA from "@/components/QA.vue";
 import { QA as QAModel } from "@/api/models";

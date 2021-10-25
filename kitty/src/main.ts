@@ -1,36 +1,20 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import store from "./store";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faUserSecret,
-  faJedi,
-  faSearch,
-  faPaw,
-  faCouch,
-  faThumbsUp,
-  faThumbsDown,
-  faTag,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
-import { faTelegram } from "@fortawesome/free-brands-svg-icons";
-import { dom } from "@fortawesome/fontawesome-svg-core";
-import { Auth0Plugin } from "@/auth/auth0-plugin";
+import store, { key } from "./store";
+import { loadIcons } from "@/icons";
+import createAuth0Client, { Auth0Client } from "@auth0/auth0-spa-js";
 
-library.add(
-  faUserSecret,
-  faJedi,
-  faSearch,
-  faPaw,
-  faTelegram,
-  faCouch,
-  faThumbsUp,
-  faThumbsDown,
-  faTag,
-  faUser
-);
+loadIcons();
+let AuthClient: Auth0Client;
+createAuth0Client({
+  domain: process.env.VUE_APP_AUTH0_DOMAIN,
+  client_id: process.env.VUE_APP_AUTH0_CLIENT_KEY,
+  redirect_uri: window.location.origin,
+  audience: process.env.VUE_APP_AUTH0_AUDIENCE,
+}).then((client) => {
+  AuthClient = client;
 
-createApp(App).use(Auth0Plugin).use(store).use(router).mount("#app");
-
-dom.watch();
+  createApp(App).use(store, key).use(router).mount("#app");
+});
+export { AuthClient };

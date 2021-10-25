@@ -2,12 +2,11 @@
   <section class="hero is-primary is-fullheight">
     <!-- Hero head: will stick at the top -->
     <div class="hero-head">
-      <header class="navbar">
+      <header class="navbar is-primary">
         <div class="container">
           <div class="navbar-brand">
             <router-link to="/" class="navbar-item" active-class="">
               <img src="@/assets/logo.png" alt="Logo" />
-              Котята
             </router-link>
             <span
               class="navbar-burger"
@@ -25,16 +24,26 @@
             class="navbar-menu"
             :class="{ 'is-active': isMenuActive }"
           >
-            <div class="navbar-end">
-              <router-link to="/" class="navbar-item" active-class="is-active"
-                >Home</router-link
-              >
+            <div class="navbar-start">
               <router-link
                 to="/search"
                 class="navbar-item"
                 active-class="is-active"
-                >Search</router-link
               >
+                <span class="icon"> <i class="fas fa-search"></i> </span>
+              </router-link>
+
+              <router-link
+                v-if="isAuthenticated"
+                to="/upload"
+                class="navbar-item"
+                active-class="is-active"
+              >
+                <span class="icon"> <i class="fas fa-file-excel"></i> </span>
+              </router-link>
+            </div>
+            <div class="navbar-end">
+              <auth-comp></auth-comp>
             </div>
           </div>
         </div>
@@ -47,26 +56,35 @@
     </div>
 
     <!-- Hero footer: will stick at the bottom -->
-    <div class="hero-foot">
-      <button @click="ddd">hhhhh</button>
-    </div>
+    <div class="hero-foot"></div>
   </section>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject } from "vue";
+import { defineComponent, ref, computed } from "vue";
+import AuthComp from "@/components/Auth.vue";
+import { useStore } from "vuex";
+import { key } from "@/store/index";
 
 export default defineComponent({
+  components: { AuthComp },
   setup() {
-    function ddd() {
-      let k = inject("auth0");
-      console.log(k);
-    }
+    const store = useStore(key);
+
+    const user = computed(() => store.state.auth.user);
+    const isAuthenticated = computed(() => store.state.auth.isAuthenticated);
+
     let isMenuActive = ref(false);
     const togleMenu = () => {
       isMenuActive.value = !isMenuActive.value;
     };
-    return { isMenuActive, togleMenu, ddd };
+
+    return {
+      isMenuActive,
+      togleMenu,
+      user,
+      isAuthenticated,
+    };
   },
 });
 </script>

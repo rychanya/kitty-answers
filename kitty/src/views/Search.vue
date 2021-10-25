@@ -8,10 +8,15 @@
           placeholder=""
           @keypress.enter="searchClick()"
           v-model="q"
+          :disabled="isLoading"
         />
       </div>
       <div class="control">
-        <div class="button is-info" @click="searchClick()">
+        <div
+          class="button is-info"
+          @click="searchClick()"
+          :class="{ 'is-loading': isLoading }"
+        >
           <span class="icon is-left">
             <i class="fas fa-search"></i>
           </span>
@@ -35,19 +40,52 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { search } from "@/api/search";
+import { defineComponent, ref, onMounted } from "vue";
+import { search as searchApi } from "@/api/search";
 import { SearchResult } from "@/api/models";
+import { useRoute, useRouter, onBeforeRouteUpdate } from "vue-router";
+
 import QA from "@/components/QA.vue";
 export default defineComponent({
   name: "Search",
   components: { QA },
   setup() {
+    const route = useRoute();
+    const router = useRouter();
     let q = ref("");
+    let isLoading = ref<boolean>(false);
     let result = ref<Array<SearchResult>>([]);
-    function searchClick() {
-      search(q.value).then((data) => (result.value = data));
+    onBeforeRouteUpdate((to, from) => {
+      if (to.query.q !== from.query.q) {
+        if (to.query.q && typeof to.query.q === "string") {
+          q.value = to.query.q;
+        } else {
+          q.value = "";
+        }
+        try {
+          isLoading.value = true;
+          search();
+        } finally {
+          isLoading.value = false;
+        }
+      }
+    });
+    function search() {
+      if (q.value === "") {
+        result.value = [];
+      } else {
+        searchApi(q.value).then((data) => (result.value = data));
+      }
     }
+    function searchClick() {
+      router.push({ query: { q: q.value } });
+    }
+    onMounted(() => {
+      if (route.query.q && typeof route.query.q === "string") {
+        q.value = route.query.q as string;
+        search();
+      }
+    });
     return { q, searchClick, result };
   },
 });
