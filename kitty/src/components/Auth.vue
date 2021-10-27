@@ -4,22 +4,20 @@
       <a class="button is-danger" @click="logout()">Выйти</a>
     </div>
     <div class="navbar-item">
-      <figure v-if="user && user.picture" class="image">
+        <span class="icon">
+          <i class="fas fa-user"></i>
+        </span>
+      <!-- <figure v-if="user && user.picture" class="image">
         <img :src="user.picture" />
       </figure>
       <span v-else class="icon">
         <i class="fas fa-user"></i>
-      </span>
+      </span> -->
     </div>
   </template>
   <template v-else>
     <div class="navbar-item">
       <a class="button is-outlined" @click="login()">Войти</a>
-    </div>
-    <div class="navbar-item">
-      <span class="icon">
-        <i class="fas fa-user"></i>
-      </span>
     </div>
   </template>
 </template>

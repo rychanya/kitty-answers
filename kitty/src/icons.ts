@@ -11,7 +11,7 @@ import {
   faUser,
   faFileExcel,
   faCheck,
-  faBan
+  faBan,
 } from "@fortawesome/free-solid-svg-icons";
 import { faTelegram } from "@fortawesome/free-brands-svg-icons";
 import { dom } from "@fortawesome/fontawesome-svg-core";
