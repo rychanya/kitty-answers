@@ -1,8 +1,9 @@
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
-from fastapi import Depends
+from fastapi import Depends, Header, HTTPException, status
 from answers.models.settings import Auth0Settings
 import jwt
+from answers.db.user import get_or_create
 
 auth0_settings = Auth0Settings()
 token_auth_scheme = HTTPBearer()
@@ -21,3 +22,13 @@ def get_payload(token: HTTPAuthorizationCredentials = Depends(token_auth_scheme)
         issuer=auth0_settings.AUTH0_ISSUER,
     )
     return payload
+
+
+def get_user(payload: dict = Depends(get_payload)):
+    sub = payload["sub"]
+    return get_or_create(sub)
+
+
+def max_content_length(content_length: int = Header(None)):
+    if content_length > 200 * 1024:
+        raise HTTPException(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)

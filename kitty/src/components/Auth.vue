@@ -4,9 +4,9 @@
       <a class="button is-danger" @click="logout()">Выйти</a>
     </div>
     <div class="navbar-item">
-        <span class="icon">
-          <i class="fas fa-user"></i>
-        </span>
+      <span class="icon">
+        <i class="fas fa-user"></i>
+      </span>
       <!-- <figure v-if="user && user.picture" class="image">
         <img :src="user.picture" />
       </figure>

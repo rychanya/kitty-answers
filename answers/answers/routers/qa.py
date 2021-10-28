@@ -1,9 +1,13 @@
 from bson.objectid import ObjectId
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, File, Header
 from answers.tasks import add
 from answers.models.qa import SearchResult, SearchResultEl
 from answers.db.qa import search, get
-from answers.dependencies import get_payload
+from answers.dependencies import get_payload, max_content_length, get_user
+from answers.db import fs
+from answers.models.user import User
+from answers.models.upload import Upload
+from answers.db.upload import create
 
 router = APIRouter()
 
@@ -16,6 +20,7 @@ def get_qa(id: str):
     _id = ObjectId(id)
     return get(_id)
 
-@router.put("/upload")
-def upload(payload=Depends(get_payload)):
-    return payload
+@router.post("/upload", dependencies=[Depends(max_content_length)], response_model=Upload)
+def upload(user: User=Depends(get_user), file: bytes = File(...)):
+    file_id = fs.put(file)
+    return create(by=user.id, file_id=file_id)

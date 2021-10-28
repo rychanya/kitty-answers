@@ -23,19 +23,18 @@ function get(_id: string | string[]): Promise<QA> {
   });
 }
 
-function upload(): Promise<any> {
+function upload(file: File): Promise<any> {
   return new Promise((res, rej) => {
+    const form = new FormData();
+    form.append("file", file, file.name);
     AuthClient.getTokenSilently().then((token) => {
       axios
-        .put(
-          "qa/upload",
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
+        .post("qa/upload", form, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((resp) => res(resp.data))
         .catch((error) => rej(error));
     });
