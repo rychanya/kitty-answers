@@ -1,9 +1,10 @@
+import jwt
+from fastapi import Depends, Header, HTTPException, status
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
-from fastapi import Depends, Header, HTTPException, status
-from answers.models.settings import Auth0Settings
-import jwt
+
 from answers.db.user import get_or_create
+from answers.models.settings import Auth0Settings
 
 auth0_settings = Auth0Settings()
 token_auth_scheme = HTTPBearer()

@@ -1,11 +1,14 @@
-from typing import Optional, Union
 from enum import Enum
+from typing import Optional, Union
 
 from bson import ObjectId
 from pydantic import BaseModel, Field
 
 from answers.models import OIDStr
 
+
+class SearchReq(BaseModel):
+    q: str
 
 
 class QATypeEnum(str, Enum):
@@ -15,7 +18,7 @@ class QATypeEnum(str, Enum):
     MatchingChoice = "Соедините соответствия справа с правильными вариантами"
 
 
-AnswerType = Union[str, list, dict[str, str]]
+AnswerType = Union[str, list]
 
 
 class SearchResultEl(BaseModel):

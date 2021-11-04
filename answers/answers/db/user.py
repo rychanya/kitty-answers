@@ -1,6 +1,7 @@
-from answers.db import client
 from bson import ObjectId
 from pymongo import ReturnDocument
+
+from answers.db import client
 from answers.models.user import User
 
 COL_NAME = "Users"
