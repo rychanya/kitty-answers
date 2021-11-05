@@ -56,9 +56,7 @@
     </div>
 
     <!-- Hero footer: will stick at the bottom -->
-    <div class="hero-foot">
-      **{{process.env.VUE_APP_AUTH0_AUDIENCE}}**
-    </div>
+    <div class="hero-foot"></div>
   </section>
 </template>
 
