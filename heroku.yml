@@ -5,9 +5,9 @@ build:
   docker:
     web: Dockerfile
   config:
-    VUE_APP_AUTH0_DOMAIN="dev-w0syo8i3.eu.auth0.com"
-    VUE_APP_AUTH0_CLIENT_KEY="A4ygV7ui4nbCv6peCK3dqjLik4133Ox4"
-    VUE_APP_AUTH0_AUDIENCE="https://kittyanswers.herokuapp.com/"
+    VUE_APP_AUTH0_DOMAIN: dev-w0syo8i3.eu.auth0.com
+    VUE_APP_AUTH0_CLIENT_KEY: A4ygV7ui4nbCv6peCK3dqjLik4133Ox4
+    VUE_APP_AUTH0_AUDIENCE: https://kittyanswers.herokuapp.com/
 run:
   web: uvicorn answers.main:app --host 0.0.0.0 --port ${PORT}
   worker:
