@@ -4,7 +4,6 @@ ARG VUE_APP_AUTH0_AUDIENCE
 
 
 FROM node:16 as build-stage
-RUN echo $VUE_APP_AUTH0_DOMAIN
 WORKDIR /kitty
 COPY ./kitty/package*.json /kitty
 RUN npm install
