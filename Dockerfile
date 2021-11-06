@@ -2,6 +2,7 @@ ARG VUE_APP_AUTH0_DOMAIN
 ARG VUE_APP_AUTH0_CLIENT_KEY
 ARG VUE_APP_AUTH0_AUDIENCE
 
+
 FROM node:16 as build-stage
 WORKDIR /kitty
 COPY ./kitty/package*.json /kitty
