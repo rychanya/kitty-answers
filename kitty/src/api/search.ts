@@ -11,14 +11,6 @@ function search(q: string): Promise<Array<SearchResult>> {
   });
 }
 
-function testTask(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    axios
-      .post('qa/test')
-      .then((resp) => resolve(resp.data))
-      .catch((error) => reject(error));
-  });
-}
 
 function get(_id: string | string[]): Promise<QA> {
   if (typeof _id !== "string") {
@@ -50,4 +42,4 @@ function upload(file: File): Promise<any> {
   });
 }
 
-export { search, get, upload, testTask };
+export { search, get, upload };

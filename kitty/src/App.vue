@@ -56,9 +56,7 @@
     </div>
 
     <!-- Hero footer: will stick at the bottom -->
-    <div class="hero-foot">
-      <button @click="testTask()">test</button>
-    </div>
+    <div class="hero-foot">**{{ env }}**</div>
   </section>
 </template>
 
@@ -67,13 +65,12 @@ import { defineComponent, ref, computed } from "vue";
 import AuthComp from "@/components/Auth.vue";
 import { useStore } from "vuex";
 import { key } from "@/store/index";
-import {testTask} from "@/api/search"
 
 export default defineComponent({
   components: { AuthComp },
   setup() {
     const store = useStore(key);
-
+    const env = process.env.VUE_APP_AUTH0_DOMAIN;
     const user = computed(() => store.state.auth.user);
     const isAuthenticated = computed(() => store.state.auth.isAuthenticated);
 
@@ -87,7 +84,7 @@ export default defineComponent({
       togleMenu,
       user,
       isAuthenticated,
-      testTask
+      env,
     };
   },
 });
