@@ -8,7 +8,7 @@ WORKDIR /kitty
 COPY ./kitty/package*.json /kitty
 RUN npm install
 COPY ./kitty /kitty
-ENV VUE_APP_AUTH0_DOMAIN=${VUE_APP_AUTH0_DOMAIN}
+ENV VUE_APP_AUTH0_DOMAIN=111
 RUN npm run build
 
 
