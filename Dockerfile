@@ -1,14 +1,11 @@
-ARG VUE_APP_AUTH0_DOMAIN
-ARG VUE_APP_AUTH0_CLIENT_KEY
-ARG VUE_APP_AUTH0_AUDIENCE
-
-
 FROM node:16 as build-stage
 WORKDIR /kitty
 COPY ./kitty/package*.json /kitty
 RUN npm install
 COPY ./kitty /kitty
-ENV VUE_APP_AUTH0_DOMAIN=111
+ENV VUE_APP_AUTH0_DOMAIN="dev-w0syo8i3.eu.auth0.com"
+ENV VUE_APP_AUTH0_CLIENT_KEY="A4ygV7ui4nbCv6peCK3dqjLik4133Ox4"
+ENV VUE_APP_AUTH0_AUDIENCE="https://kittyanswers.herokuapp.com/"
 RUN npm run build
 
 
