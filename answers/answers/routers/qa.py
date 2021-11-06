@@ -7,7 +7,7 @@ from answers.dependencies import get_user, max_content_length
 from answers.models.qa import SearchResult, SearchResultEl
 from answers.models.upload import Upload
 from answers.models.user import User
-from answers.tasks import parse_upload
+from answers.tasks import parse_upload, test_task
 from answers.xl import file_iter
 
 router = APIRouter()
@@ -41,3 +41,7 @@ def upload(
     for qa_id in upload.row_data:
         parse_upload.delay(str(qa_id), str(user.id))
     return upload
+
+@router.post("/test")
+def test():
+    test_task.delay()

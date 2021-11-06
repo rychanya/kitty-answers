@@ -1,17 +1,11 @@
-ARG VUE_APP_AUTH0_DOMAIN
-ARG VUE_APP_AUTH0_CLIENT_KEY
-ARG VUE_APP_AUTH0_AUDIENCE
-
-
 FROM node:16 as build-stage
-ENV VUE_APP_AUTH0_DOMAIN=${VUE_APP_AUTH0_DOMAIN}
-ENV VUE_APP_AUTH0_CLIENT_KEY=${VUE_APP_AUTH0_CLIENT_KEY}
-ENV VUE_APP_AUTH0_AUDIENCE=${VUE_APP_AUTH0_AUDIENCE}
 WORKDIR /kitty
 COPY ./kitty/package*.json /kitty
 RUN npm install
 COPY ./kitty /kitty
 RUN npm run build
+# CMD npm run build
+
 
 
 FROM python:3.9 as requirements-stage
