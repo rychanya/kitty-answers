@@ -1,6 +1,10 @@
 setup:
   addons:
   - plan: heroku-redis
+  config:
+    VUE_APP_AUTH0_DOMAIN: ${VUE_APP_AUTH0_DOMAIN}
+    VUE_APP_AUTH0_CLIENT_KEY: ${VUE_APP_AUTH0_CLIENT_KEY}
+    VUE_APP_AUTH0_AUDIENCE: ${VUE_APP_AUTH0_AUDIENCE}
 build:
   docker:
     web: Dockerfile
