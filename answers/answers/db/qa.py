@@ -121,6 +121,3 @@ def get_or_create(qa: UploadQAinDB, by: ObjectId):
                 {"_id": qa.id}, {"$set": {"ids": ids, "isNew": is_new}}, session=session
             )
     client.close()
-
-def test_db_op():
-    client.get_database().get_collection("TEST__").insert_one({"test": 1})

@@ -3,7 +3,7 @@ import os
 import celery
 from bson.objectid import ObjectId
 
-from answers.db.qa import get_or_create, test_db_op
+from answers.db.qa import get_or_create
 from answers.db.upload import get_el
 from answers.models.upload import UploadQAinDB
 
@@ -17,7 +17,3 @@ def parse_upload(oid_str: str, by_str: str):
     by = ObjectId(by_str)
     qa = UploadQAinDB.parse_obj(get_el(oid))
     get_or_create(qa, by)
-
-@app.task
-def test_task():
-    test_db_op()
