@@ -1,5 +1,7 @@
 import jwt
-from fastapi import Depends, Header, HTTPException, status
+from bson import ObjectId
+from bson.errors import InvalidId
+from fastapi import Depends, Header, HTTPException, Path, status
 from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 
@@ -11,6 +13,15 @@ token_auth_scheme = HTTPBearer()
 jwks_client = jwt.PyJWKClient(
     f"https://{auth0_settings.VUE_APP_AUTH0_DOMAIN}/.well-known/jwks.json"
 )
+
+
+def oid_from_path(str_id: str = Path(...)) -> ObjectId:
+    try:
+        return ObjectId(str_id)
+    except (InvalidId, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="not valid id"
+        )
 
 
 def get_payload(token: HTTPAuthorizationCredentials = Depends(token_auth_scheme)):

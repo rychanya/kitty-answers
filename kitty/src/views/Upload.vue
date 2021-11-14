@@ -31,10 +31,12 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
 import { upload } from "@/api/search";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "Upload",
   setup() {
+    const router = useRouter();
     const maxSize = 100 * 1024;
     let file = ref<File>();
     const fileName = computed(() => {
@@ -67,7 +69,10 @@ export default defineComponent({
             isSizeCorrect.value === true &&
             isFormatCorrect.value === true
           ) {
-            upload(file.value).then((v) => console.log(v));
+            upload(file.value).then((v: { _id: string }) => {
+              const id = v._id;
+              router.push({ name: "UploadReport", params: { id } });
+            });
           }
         }
       }

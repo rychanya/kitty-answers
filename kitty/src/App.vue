@@ -56,7 +56,7 @@
     </div>
 
     <!-- Hero footer: will stick at the bottom -->
-    <div class="hero-foot">**{{ env }}**</div>
+    <div class="hero-foot"></div>
   </section>
 </template>
 
@@ -70,7 +70,6 @@ export default defineComponent({
   components: { AuthComp },
   setup() {
     const store = useStore(key);
-    const env = process.env.VUE_APP_AUTH0_DOMAIN;
     const user = computed(() => store.state.auth.user);
     const isAuthenticated = computed(() => store.state.auth.isAuthenticated);
 
@@ -84,7 +83,6 @@ export default defineComponent({
       togleMenu,
       user,
       isAuthenticated,
-      env,
     };
   },
 });

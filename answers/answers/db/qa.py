@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 from bson import ObjectId
 
@@ -10,7 +11,7 @@ from answers.models.upload import UploadQAinDB
 COL_NAME = "QA"
 
 
-def search(s: str):
+def search(s: str, user_id: Optional[ObjectId]):
     pipeline = [
         {
             "$match": {
@@ -18,6 +19,31 @@ def search(s: str):
                 "question": {"$regex": f".*{re.escape(s)}.*", "$options": "i"},
             }
         },
+        {
+            "$lookup": {
+                "from": "Rating",
+                "localField": "_id",
+                "foreignField": "_id",
+                "as": "rating",
+            }
+        },
+        {"$unwind": {"path": "$rating", "preserveNullAndEmptyArrays": True}},
+        {
+            "$addFields": {
+                "rating": {
+                    "$ifNull": ["$rating", {"_id": "$_id", "likes": [], "dislikes": []}]
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "rating.likes_count": {"$size": "$rating.likes"},
+                "rating.dislikes_count": {"$size": "$rating.dislikes"},
+                "rating.is_liked": {"$in": [user_id, "$rating.likes"]},
+                "rating.is_disliked": {"$in": [user_id, "$rating.dislikes"]},
+            }
+        },
+        # {"$project": {"rating._id": 0}},
         {
             "$group": {
                 "_id": {"question": "$question", "type": "$type"},
@@ -30,8 +56,43 @@ def search(s: str):
     )
 
 
-def get(_id: ObjectId):
-    return client.get_database().get_collection(COL_NAME).find_one({"_id": _id})
+def get(_id: ObjectId, user_id: Optional[ObjectId]):
+    return list(
+        client.get_database()
+        .get_collection(COL_NAME)
+        .aggregate(
+            [
+                {"$match": {"_id": _id}},
+                {
+                    "$lookup": {
+                        "from": "Rating",
+                        "localField": "_id",
+                        "foreignField": "_id",
+                        "as": "rating",
+                    }
+                },
+                {"$unwind": {"path": "$rating", "preserveNullAndEmptyArrays": True}},
+                {
+                    "$addFields": {
+                        "rating": {
+                            "$ifNull": [
+                                "$rating",
+                                {"_id": "$_id", "likes": [], "dislikes": []},
+                            ]
+                        }
+                    }
+                },
+                {
+                    "$addFields": {
+                        "rating.likes_count": {"$size": "$rating.likes"},
+                        "rating.dislikes_count": {"$size": "$rating.dislikes"},
+                        "rating.is_liked": {"$in": [user_id, "$rating.likes"]},
+                        "rating.is_disliked": {"$in": [user_id, "$rating.dislikes"]},
+                    }
+                },
+            ]
+        )
+    )[0]
 
 
 def get_or_create(qa: UploadQAinDB, by: ObjectId):

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Union
+from typing import Optional, Union
 
 from bson import ObjectId
 from pydantic import BaseModel, Field, validator
@@ -26,6 +26,8 @@ class UploadQAinDB(BaseModel):
     is_corect: bool
     answers: list[str]
     answer: Union[str, list[str]]
+    ids: Optional[list[OIDStr]]
+    isNew: Optional[bool]
 
     def to_qa(self, by: ObjectId):
         return SearchResultEl(

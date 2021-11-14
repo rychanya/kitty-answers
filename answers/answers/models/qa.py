@@ -5,6 +5,7 @@ from bson import ObjectId
 from pydantic import BaseModel, Field
 
 from answers.models import OIDStr
+from answers.models.rating import Rating
 
 
 class SearchReq(BaseModel):
@@ -18,7 +19,7 @@ class QATypeEnum(str, Enum):
     MatchingChoice = "Соедините соответствия справа с правильными вариантами"
 
 
-AnswerType = Union[str, list]
+AnswerType = Union[str, list, dict]
 
 
 class SearchResultEl(BaseModel):
@@ -36,6 +37,7 @@ class SearchResultEl(BaseModel):
     correct: Optional[AnswerType]
     incorrect: list[AnswerType] = []
     incomplete: bool = False
+    rating: Rating
 
 
 class SearchResultGroup(BaseModel):

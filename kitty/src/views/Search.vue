@@ -25,14 +25,12 @@
     </div>
     <div class="columns is-multiline is-centered">
       <div class="column is-full">
-        <div v-for="group in result" class="box block content" :key="group._id">
+        <div v-for="group in result" class="box block content has-background-light" :key="group._id">
           <h1 class="title has-text-black is-6">{{ group._id.question }}</h1>
           <h2 class="subtitle has-text-grey-light is-6">
             {{ group._id.type }}
           </h2>
-          <div v-for="qa in group.data" :key="qa._id">
-            <QA :qa="qa"></QA>
-          </div>
+          <QA v-for="qa in group.data" :key="qa._id" :qa="qa"></QA>
         </div>
       </div>
     </div>
@@ -86,7 +84,7 @@ export default defineComponent({
         search();
       }
     });
-    return { q, searchClick, result };
+    return { q, searchClick, result, isLoading };
   },
 });
 </script>

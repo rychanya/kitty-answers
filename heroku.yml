@@ -1,17 +1,9 @@
 setup:
   addons:
   - plan: heroku-redis
-  config:
-    VUE_APP_AUTH0_DOMAIN: ${VUE_APP_AUTH0_DOMAIN}
-    VUE_APP_AUTH0_CLIENT_KEY: ${VUE_APP_AUTH0_CLIENT_KEY}
-    VUE_APP_AUTH0_AUDIENCE: ${VUE_APP_AUTH0_AUDIENCE}
 build:
   docker:
     web: Dockerfile
-  config:
-    VUE_APP_AUTH0_DOMAIN: ${VUE_APP_AUTH0_DOMAIN}
-    VUE_APP_AUTH0_CLIENT_KEY: ${VUE_APP_AUTH0_CLIENT_KEY}
-    VUE_APP_AUTH0_AUDIENCE: ${VUE_APP_AUTH0_AUDIENCE}
 run:
   web: uvicorn answers.main:app --host 0.0.0.0 --port ${PORT}
   worker:

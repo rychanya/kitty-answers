@@ -12,6 +12,7 @@ import Home from "@/views/Home.vue";
 import Search from "@/views/Search.vue";
 import QA from "@/views/QA.vue";
 import Upload from "@/views/Upload.vue";
+import UploadReport from "@/views/UploadReport.vue"
 import { AuthClient } from "@/main";
 import Store from "@/store/index";
 
@@ -30,6 +31,14 @@ const routes: Array<RouteRecordRaw> = [
     path: "/search",
     name: "Search",
     component: Search,
+  },
+  {
+    path: "/uploadreport/:id",
+    name: "UploadReport",
+    component: UploadReport,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: "/upload",

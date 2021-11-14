@@ -7,12 +7,6 @@
       <span class="icon">
         <i class="fas fa-user"></i>
       </span>
-      <!-- <figure v-if="user && user.picture" class="image">
-        <img :src="user.picture" />
-      </figure>
-      <span v-else class="icon">
-        <i class="fas fa-user"></i>
-      </span> -->
     </div>
   </template>
   <template v-else>
@@ -37,11 +31,9 @@ export default defineComponent({
 
     AuthClient.isAuthenticated().then((v) => {
       store.state.auth.isAuthenticated = v;
-      console.log(v);
     });
     AuthClient.getUser().then((v) => {
       store.state.auth.user = v;
-      console.log(v);
     });
 
     async function login(options?: RedirectLoginOptions) {
