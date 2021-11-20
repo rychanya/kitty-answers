@@ -9,3 +9,7 @@ router = APIRouter(prefix="/qa", tags=["QA"])
 @router.get("/{id}")
 def get_by_id(id: str, use_case: GetByIdUseCase = Depends(get_use_case)):
     return use_case.execute(id)
+
+@router.post("/test")
+def test_():
+    return "post ok"
