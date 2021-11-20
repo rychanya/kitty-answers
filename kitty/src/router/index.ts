@@ -1,80 +1,15 @@
-import "vue-router";
+import { createRouter, createWebHistory } from "vue-router"
+import HelloWorld from '../components/HelloWorld.vue'
+import About from '../components/About.vue'
+import NotFound from "../components/NotFound.vue"
 
-declare module "vue-router" {
-  interface RouteMeta {
-    isAdmin?: boolean;
-    requiresAuth: boolean;
-  }
-}
 
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Home from "@/views/Home.vue";
-import Search from "@/views/Search.vue";
-import QA from "@/views/QA.vue";
-import Upload from "@/views/Upload.vue";
-import UploadReport from "@/views/UploadReport.vue"
-import { AuthClient } from "@/main";
-import Store from "@/store/index";
 
-const routes: Array<RouteRecordRaw> = [
-  {
-    path: "/",
-    name: "Home",
-    component: Home,
-  },
-  {
-    path: "/:id",
-    name: "QA",
-    component: QA,
-  },
-  {
-    path: "/search",
-    name: "Search",
-    component: Search,
-  },
-  {
-    path: "/uploadreport/:id",
-    name: "UploadReport",
-    component: UploadReport,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-  {
-    path: "/upload",
-    name: "Upload",
-    component: Upload,
-    meta: {
-      requiresAuth: true,
-    },
-  },
-];
+const routes = [
+    { path: "/", component: HelloWorld },
+    { path: "/about", component: About },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound }
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
+]
 
-router.beforeEach(async (to) => {
-  try {
-    if (to.query.code && to.query.state) {
-      const { appState } = await AuthClient.handleRedirectCallback();
-      router.push(
-        appState && appState.targetUrl
-          ? appState.targetUrl
-          : window.location.pathname
-      );
-    }
-  } catch (error) {
-    console.log(error);
-  } finally {
-    Store.state.auth.isAuthenticated = await AuthClient.isAuthenticated();
-    Store.state.auth.user = await AuthClient.getUser();
-  }
-  // const isAuthenticated = await AuthClient.isAuthenticated();
-  if (to.meta.requiresAuth && !Store.state.auth.isAuthenticated) {
-    return router.push("/");
-  }
-});
-
-export default router;
+export default createRouter({ history: createWebHistory("/web/"), routes })

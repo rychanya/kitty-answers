@@ -1,5 +1,4 @@
 import pytest
-from pymongo.collection import Collection
 from pytest_mock import MockerFixture
 
 from answers.db import client
@@ -11,7 +10,3 @@ def qa_client(mocker: MockerFixture):
     mocker.patch("answers.db.qa.COL_NAME", collection_name)
     yield client.get_database().get_collection(collection_name)
     client.get_database().drop_collection(collection_name)
-
-
-def test_t(qa_client: Collection):
-    ...
