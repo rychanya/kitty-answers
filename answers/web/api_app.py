@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
-from adapters.BaseQAStorage import InvalidQAIdException, QANotExistException
+from adapters.QAStorage.BaseQAStorage import InvalidQAIdException, QANotExistException
 from web.routes import qa
 
 app = FastAPI(title="Kitten", version="3.1.0")

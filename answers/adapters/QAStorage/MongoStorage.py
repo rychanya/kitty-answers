@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from pydantic import BaseSettings
 from pymongo import MongoClient
 
-from adapters.BaseQAStorage import (
+from adapters.QAStorage.BaseQAStorage import (
     BaseQAStorage,
     InvalidQAIdException,
     QANotExistException,
@@ -69,4 +69,26 @@ class MongoStorage(BaseQAStorage):
         return QA.parse_obj(qa)
 
     def get_or_create(self, dto: QAInputDTO) -> QACreateResult:
+        pipeline = self.inputDTO_to_pipeline(dto)
+        with self.client.start_session() as session:
+            with session.start_transaction():
+                ids = (
+                    self.client.get_database()
+                    .get_collection(self.QA_NAME)
+                    .aggregate(pipeline=pipeline, session=session)
+                )
+                if ids:
+                    return QACreateResult(
+                        ids=[str(el["_id"] for el in ids)], is_new=False
+                    )
+                id = (
+                    self.client.get_database()
+                    .get_collection(self.QA_NAME)
+                    .insert_one(dto.dict(), session=session)
+                    .inserted_id
+                )
+                return QACreateResult(ids=[str(id)], is_new=True)
+
+    @staticmethod
+    def inputDTO_to_pipeline(dto: QAInputDTO):
         ...

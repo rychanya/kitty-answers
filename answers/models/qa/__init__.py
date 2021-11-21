@@ -59,5 +59,5 @@ class QAInputDTO(GenericModel, Generic[AnswerType]):
 
 
 class QACreateResult(BaseModel):
-    data: QA
+    ids: list[str]
     is_new: bool

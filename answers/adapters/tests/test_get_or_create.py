@@ -1,4 +1,4 @@
-from adapters.MongoStorage import MongoStorage
+from adapters.QAStorage.MongoStorage import MongoStorage
 
 
 def test_(MongoStorageMock: MongoStorage):

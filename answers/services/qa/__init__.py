@@ -1,4 +1,4 @@
-from adapters.BaseQAStorage import BaseQAStorage
+from adapters.QAStorage.BaseQAStorage import BaseQAStorage
 
 
 class GetByIdUseCase:
