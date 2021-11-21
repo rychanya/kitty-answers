@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from pytest_mock import MockerFixture
 
 from adapters.QAStorage.MongoStorage import MongoStorage
+from models.qa import QAInputDTO, QATypeEnum
 
 load_dotenv()
 
@@ -20,3 +21,15 @@ def MongoStorageMock(mocker: MockerFixture):
     storage = MongoStorage()
     yield storage
     storage.client.drop_database(db_name)
+
+@pytest.fixture
+def qa_complete_only_choice_1():
+    return QAInputDTO(
+        by=None,
+        type=QATypeEnum.OnlyChoice,
+        question="qa_complete_only_choice_1",
+        answers=["qcac1", "qcac2", "qcac3", "qcac4"],
+        correct="qcac2",
+        incorrect=["qcac3", "qcac4"],
+        is_incomplete=False
+    )
