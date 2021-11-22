@@ -6,13 +6,14 @@ from bson.errors import InvalidId
 from dotenv import load_dotenv
 from pydantic import BaseSettings
 from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from adapters.QAStorage.BaseQAStorage import (
     BaseQAStorage,
     InvalidQAIdException,
     QANotExistException,
 )
-from models.qa import QA, QACreateResult, QAInputDTO
+from models.qa import QA, QACreateResult, QAInputDTO, QATypeEnum
 
 load_dotenv()
 
@@ -50,6 +51,10 @@ class MongoStorage(BaseQAStorage):
         else:
             return self._get_client()
 
+    @property
+    def qa_collection(self) -> Collection:
+        return self.client.get_database().get_collection(self.QA_NAME)
+
     @staticmethod
     def str_to_oid(str_id) -> ObjectId:
         try:
@@ -72,7 +77,7 @@ class MongoStorage(BaseQAStorage):
         pipeline = self.inputDTO_to_pipeline(dto)
         with self.client.start_session() as session:
             with session.start_transaction():
-                ids = (
+                ids = list(
                     self.client.get_database()
                     .get_collection(self.QA_NAME)
                     .aggregate(pipeline=pipeline, session=session)
@@ -91,4 +96,50 @@ class MongoStorage(BaseQAStorage):
 
     @staticmethod
     def inputDTO_to_pipeline(dto: QAInputDTO):
-        ...
+        pipeline = [
+            {
+                "$match": {
+                    "question": dto.question,
+                    "type": dto.type,
+                    "$expr": {"$setIsSubset": [dto.answers, "$answers"]}
+                    if dto.is_incomplete
+                    else {"$setEquals": [dto.answers, "$answers"]},
+                }
+            }
+        ]
+        if not dto.is_incomplete:
+            pipeline.append(
+                {
+                    "$match": {
+                        "is_incomplete": dto.is_incomplete,
+                        "$expr": {"$setEquals": ["$extra_answers", dto.extra_answers]},
+                    }
+                }
+            )
+        if dto.correct:
+            pipeline.append(
+                {"$match": {"$expr": {"$setEquals": ["$correct", dto.correct]}}}
+                if dto.type == QATypeEnum.MultipleChoice
+                else {"$match": {"correct": dto.correct}}
+            )
+        for incorrect_answer in dto.incorrect:
+            pipeline.append(
+                {
+                    "$match": {
+                        "$expr": {
+                            "$anyElementTrue": [
+                                {
+                                    "$map": {
+                                        "input": "$incorrect",
+                                        "as": "el",
+                                        "in": {"$setEquals": ["$$el", incorrect_answer]}
+                                        if dto.type == QATypeEnum.MultipleChoice
+                                        else {"$eq": ["$$el", incorrect_answer]},
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            )
+        return pipeline

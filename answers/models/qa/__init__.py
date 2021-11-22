@@ -53,6 +53,7 @@ class QAInputDTO(GenericModel, Generic[AnswerType]):
     type: QATypeEnum
     question: str
     answers: list[str]
+    extra_answers: list[str] = []
     correct: Optional[AnswerType]
     incorrect: list[AnswerType] = []
     is_incomplete: bool
