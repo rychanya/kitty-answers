@@ -13,3 +13,8 @@ def prety(session: nox.Session):
 @nox.session(py=False)
 def serv(session: nox.Session):
     session.run("poetry", "run", "uvicorn", "web.main:app", "--reload")
+
+
+@nox.session(py=False)
+def test(session: nox.Session):
+    session.run("poetry", "run", "pytest")
