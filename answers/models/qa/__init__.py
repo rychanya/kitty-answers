@@ -54,9 +54,22 @@ class QAInputDTO(GenericModel, Generic[AnswerType]):
     question: str
     answers: list[str]
     extra_answers: list[str] = []
-    correct: Optional[AnswerType]
-    incorrect: list[AnswerType] = []
-    is_incomplete: bool
+    answer: AnswerType
+    is_correct: bool
+
+    @validator("answer")
+    def validate_answer(cls, v, values):
+        _type = values.get("type")
+        _answers = values.get("answers", [])
+        if _type == QATypeEnum.OnlyChoice and v not in _answers:
+            raise ValueError("answer must be in answers")
+        if _type == QATypeEnum.MultipleChoice and not set(v).issubset(_answers):
+            raise ValueError("answer must be subset of answers")
+        if _type in (QATypeEnum.MatchingChoice, QATypeEnum.RangingChoice) and not set(
+            v
+        ) == set(_answers):
+            raise ValueError("answer must contain all answers")
+        return v
 
 
 class QACreateResult(BaseModel):
