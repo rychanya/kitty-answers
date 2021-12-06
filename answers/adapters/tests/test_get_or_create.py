@@ -62,6 +62,6 @@ def test_create(
         MongoStorageMock.qa_collection.insert_one(data)
     qa_in_db_count = MongoStorageMock.qa_collection.count_documents({})
     assert qa_in_db_count == len(qa_in_db)
-    res = MongoStorageMock.get_or_create(qa)
+    res = MongoStorageMock.get_or_create_qa(qa)
     assert MongoStorageMock.qa_collection.count_documents({}) - qa_in_db_count == count
     assert res.is_new == is_new

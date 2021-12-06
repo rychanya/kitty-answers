@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Generic, Optional, TypeVar
+from typing import Any, Generic, Optional, TypeVar
 
 from bson import ObjectId
 from pydantic import Field, validator
@@ -45,13 +45,22 @@ class QA(GenericModel, Generic[AnswerType]):
         return v
 
 
+class QABase(BaseModel):
+    class Config:
+        use_enum_values = True
+
+    id: Optional[str]
+    type: QATypeEnum
+    question: str
+
+
 class QAInputDTO(GenericModel, Generic[AnswerType]):
     class Config:
         use_enum_values = True
 
+    base: QABase
     by: Optional[str]
-    type: QATypeEnum
-    question: str
+    group_id: Optional[str]
     answers: list[str]
     extra_answers: list[str] = []
     answer: AnswerType
@@ -75,3 +84,19 @@ class QAInputDTO(GenericModel, Generic[AnswerType]):
 class QACreateResult(BaseModel):
     ids: list[str]
     is_new: bool
+
+
+class QAGroup(BaseModel):
+    id: Optional[str]
+    answers: list[str]
+    extra_answers: list[str] = []
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, QAGroup):
+            return (
+                self.id == other.id
+                and self.answers == other.answers
+                and self.extra_answers == other.extra_answers
+            )
+        else:
+            raise NotImplementedError
