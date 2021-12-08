@@ -73,5 +73,9 @@ from answers.models.qa import QATypeEnum
 
 def test___g():
     s = MongoStorage()
-    print(s.client.get_database().name)
+    print(
+        s._get_or_create_question(
+            QuestionDTO(question="55", type=QATypeEnum.OnlyChoice)
+        )
+    )
     assert False

@@ -1,5 +1,6 @@
 import os
 from typing import Optional, Tuple
+from uuid import uuid4
 
 import certifi
 from bson import ObjectId
@@ -10,7 +11,13 @@ from pymongo import MongoClient, ReturnDocument
 from pymongo.client_session import ClientSession
 from pymongo.collection import Collection
 
-from adapters.QAStorage.AbstractQAStorage import QAINDTO, AbstractQAStorage, QuestionDTO
+from adapters.QAStorage.AbstractQAStorage import (
+    QAINDTO,
+    AbstractQAStorage,
+    GroupDTO,
+    QuestionDTO,
+    QuestionException,
+)
 
 load_dotenv()
 
@@ -68,11 +75,20 @@ class MongoStorage(AbstractQAStorage):
 
     def _get_or_create_question(
         self, question: QuestionDTO, session: ClientSession = None
-    ):
-        filter = {"question": question.question, "type": question.type}
-        if question.id:
-            filter["_id"] = ObjectId(question.id)
-        doc = self.questions_collection.find_one(filter=filter, session=session)
+    ) -> QuestionDTO:
+        return QuestionDTO.parse_obj(
+            self.questions_collection.find_one_and_update(
+                filter=question.dict(exclude={"id"}),
+                update={"$setOnInsert": {"id": uuid4()}},
+                upsert=True,
+                return_document=ReturnDocument.AFTER,
+                session=session,
+            )
+        )
+
+    def _get_or_create_group(self, group: Optional[GroupDTO]) -> Optional[GroupDTO]:
+        if group is None:
+            return None
 
     # @staticmethod
     # def str_to_id(str_id: str) -> ObjectId:
