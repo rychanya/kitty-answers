@@ -3,8 +3,6 @@ from typing import Optional, Tuple
 from uuid import uuid4
 
 import certifi
-from bson import ObjectId
-from bson.errors import InvalidId
 from dotenv import load_dotenv
 from pydantic import BaseSettings
 from pymongo import MongoClient, ReturnDocument
@@ -12,12 +10,15 @@ from pymongo.client_session import ClientSession
 from pymongo.collection import Collection
 
 from adapters.QAStorage.AbstractQAStorage import (
-    QAINDTO,
+    QADB,
+    QADTO,
     AbstractQAStorage,
+    GroupDB,
     GroupDTO,
+    QuestionDB,
     QuestionDTO,
-    QuestionException,
 )
+from answers.models.qa import QATypeEnum
 
 load_dotenv()
 
@@ -29,7 +30,6 @@ class MongoSettings(BaseSettings):
 
 
 settings = MongoSettings()
-settings.MONGO_DB_NAME = "TEST_A"
 
 
 class MongoStorage(AbstractQAStorage):
@@ -70,15 +70,48 @@ class MongoStorage(AbstractQAStorage):
     def groups_collection(self) -> Collection:
         return self.client.get_database().get_collection(self._GROUPS)
 
-    def get_or_create(self, in_dto: QAINDTO) -> Tuple[str, bool]:
-        return ("1", True)
+    def get_or_create(self, in_dto: QADTO) -> Tuple[QADB, bool]:
+        with self.client.start_session() as session:
+            with session.start_transaction():
+                question = self._get_or_create_question(
+                    in_dto.question, session=session
+                )
+                group = self._get_or_create_group(
+                    in_dto.group, question, session=session
+                )
+                filter = {
+                    "question_id": question.id,
+                    "group_id": group.id if group else None,
+                    "is_correct": in_dto.is_correct,
+                }
+                if question.type in (
+                    QATypeEnum.OnlyChoice,
+                    QATypeEnum.RangingChoice,
+                    QATypeEnum.MatchingChoice,
+                ):
+                    filter.update({"answer": in_dto.answer})
+                else:
+                    filter.update({"$expr": {"$setEquals": [in_dto.answer, "$answer"]}})
+                doc = self.answers_collection.find_one(filter=filter, session=session)
+                if doc is not None:
+                    return (QADB.parse_obj(doc), False)
+                else:
+                    answer_dict = {
+                        "answer": in_dto.answer,
+                        "is_correct": in_dto.is_correct,
+                        "question_id": question.id,
+                        "group_id": group.id if group else None,
+                        "id": uuid4(),
+                    }
+                    self.answers_collection.insert_one(answer_dict, session=session)
+                    return (QADB.parse_obj(answer_dict), True)
 
     def _get_or_create_question(
         self, question: QuestionDTO, session: ClientSession = None
-    ) -> QuestionDTO:
-        return QuestionDTO.parse_obj(
+    ) -> QuestionDB:
+        return QuestionDB.parse_obj(
             self.questions_collection.find_one_and_update(
-                filter=question.dict(exclude={"id"}),
+                filter=question.dict(),
                 update={"$setOnInsert": {"id": uuid4()}},
                 upsert=True,
                 return_document=ReturnDocument.AFTER,
@@ -86,9 +119,42 @@ class MongoStorage(AbstractQAStorage):
             )
         )
 
-    def _get_or_create_group(self, group: Optional[GroupDTO]) -> Optional[GroupDTO]:
-        if group is None:
+    def _get_or_create_group(
+        self,
+        group_dto: Optional[GroupDTO],
+        question: QuestionDB,
+        session: ClientSession = None,
+    ) -> Optional[GroupDB]:
+        if group_dto is None:
             return None
+
+        group_dto.check(question.type)
+
+        doc = self.groups_collection.find_one(
+            filter={
+                "question_id": question.id,
+                "$expr": {
+                    "$and": [
+                        {"$setEquals": [group_dto.all_answers, "$all_answers"]},
+                        {
+                            "$setEquals": [
+                                group_dto.all_extra_answers,
+                                "$all_extra_answers",
+                            ]
+                        },
+                    ]
+                },
+            },
+            session=session,
+        )
+        if doc is not None:
+            return GroupDB.parse_obj(doc)
+        else:
+            group_dict = group_dto.dict()
+            group_dict["question_id"] = question.id
+            group_dict["id"] = uuid4()
+            self.groups_collection.insert_one(group_dict, session=session)
+            return GroupDB.parse_obj(group_dict)
 
     # @staticmethod
     # def str_to_id(str_id: str) -> ObjectId:

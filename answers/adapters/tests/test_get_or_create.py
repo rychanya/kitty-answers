@@ -66,16 +66,19 @@
 #     assert MongoStorageMock.qa_collection.count_documents({}) - qa_in_db_count == count
 #     assert res.is_new == is_new
 
-from adapters.QAStorage.AbstractQAStorage import QuestionDTO
+from adapters.QAStorage.AbstractQAStorage import QADTO
 from adapters.QAStorage.MongoStorage import MongoStorage
 from answers.models.qa import QATypeEnum
 
 
-def test___g():
-    s = MongoStorage()
-    print(
-        s._get_or_create_question(
-            QuestionDTO(question="55", type=QATypeEnum.OnlyChoice)
-        )
-    )
+def test___g(MongoStorageMock: MongoStorage):
+
+    d = {
+        "question": {"question": "55", "type": QATypeEnum.OnlyChoice},
+        "group": {"all_extra_answers": [], "all_answers": ["1", "3"]},
+        "answer": ["3"],
+        "is_correct": True,
+    }
+    res = MongoStorageMock.get_or_create(QADTO.parse_obj(d))
+    print(res)
     assert False
