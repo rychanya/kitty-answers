@@ -1,4 +1,5 @@
 import os
+from contextlib import contextmanager
 
 import pytest
 from dotenv import load_dotenv
@@ -18,8 +19,13 @@ def MongoStorageMock(mocker: MockerFixture):
     mocker.patch("adapters.QAStorage.MongoStorage.settings.MONGO_PASSWORD", password)
     mocker.patch("adapters.QAStorage.MongoStorage.settings.MONGO_USER", user)
     storage = MongoStorage()
-    return storage
 
+    @contextmanager
+    def storage_context():
+        try:
+            yield storage
+        finally:
+            print(444)
+            storage.client.drop_database(db_name)
 
-#     yield storage
-#     storage.client.drop_database(db_name)
+    return storage_context
