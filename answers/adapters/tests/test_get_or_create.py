@@ -68,22 +68,25 @@
 
 from typing import Callable, ContextManager
 
+from hypothesis import strategies
+from hypothesis.core import given
+
 from adapters.QAStorage.AbstractQAStorage import QADTO
 from adapters.QAStorage.MongoStorage import MongoStorage
 from answers.models.qa import QATypeEnum
 
 StorageContextManager = Callable[[], ContextManager[MongoStorage]]
 
+typies_strategies = (
+    strategies.just(QATypeEnum.OnlyChoice.value)
+    | strategies.just(QATypeEnum.MatchingChoice.value)
+    | strategies.just(QATypeEnum.RangingChoice.value)
+    | strategies.just(QATypeEnum.MultipleChoice.value)
+)
 
-def test___g(MongoStorageMock: StorageContextManager):
 
-    d = {
-        "question": {"question": "55", "type": QATypeEnum.OnlyChoice},
-        "group": {"all_extra_answers": [], "all_answers": ["1", "3"]},
-        "answer": ["3"],
-        "is_correct": True,
-    }
-    with MongoStorageMock() as storage:
-        res = storage.get_or_create(QADTO.parse_obj(d))
-        print(res)
-        assert False
+@given(typies=typies_strategies)
+def test___g(typies):
+    print(MongoStorage().client.get_database().name)
+    print(typies)
+    assert False

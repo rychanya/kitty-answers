@@ -10,7 +10,7 @@ from adapters.QAStorage.MongoStorage import MongoStorage
 load_dotenv()
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def MongoStorageMock(mocker: MockerFixture):
     db_name = os.environ.get("TEST_MONGO_DB_NAME")
     password = os.environ.get("TEST_MONGO_PASSWORD")
@@ -18,14 +18,14 @@ def MongoStorageMock(mocker: MockerFixture):
     mocker.patch("adapters.QAStorage.MongoStorage.settings.MONGO_DB_NAME", db_name)
     mocker.patch("adapters.QAStorage.MongoStorage.settings.MONGO_PASSWORD", password)
     mocker.patch("adapters.QAStorage.MongoStorage.settings.MONGO_USER", user)
-    storage = MongoStorage()
+    # storage = MongoStorage()
 
-    @contextmanager
-    def storage_context():
-        try:
-            yield storage
-        finally:
-            print(444)
-            storage.client.drop_database(db_name)
+    # @contextmanager
+    # def storage_context():
+    #     try:
+    #         yield storage
+    #     finally:
+    #         print(444)
+    #         storage.client.drop_database(db_name)
 
-    return storage_context
+    # return storage_context
